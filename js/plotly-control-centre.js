@@ -59,10 +59,11 @@ var PlotlyControlCentre = (function(){
           return;
         }
 
-        if(whatChanged === events.axisEvent ){
+        if(whatChanged === events.axisEvent && groupKey === undefined ){
           for(i=0;i<data.length;i++){
             data[i].y = []; // clear out the old data set
             data[i].x = [];
+
 
             plotData.map(function(d){
               data[i].x.push(d[xAxisKey]);
@@ -70,7 +71,9 @@ var PlotlyControlCentre = (function(){
             });
 
           }
-        }else if (whatChanged == events.groupEvent) {
+        }
+
+        if (whatChanged == events.groupEvent || groupKey !== undefined) {
           var groupedData = [];
           data = [];
 
