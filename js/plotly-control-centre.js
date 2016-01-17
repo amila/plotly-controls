@@ -28,38 +28,80 @@ var PlotlyControlCentre = (function(){
     docEl.append(output);
 
     var xyChart = function(){
-      var data = {x:[], y:[], type: "scatter"};
+      var data = [{x:[], y:[], type: "scatter"}];
+      var xAxisKey, yAxisKey, groupKey;
+      var events = {
+        axisEvent: "axisEvent",
+        groupEvent: "groupEvent"
+      }
 
-      var xAxis = function(){
-        var key = this.innerHTML;
-        data.x = []; // clear out the old data set
-
-        plotData.map(function(d){
-          data.x.push(d[key]);
-        });
-
+      var xAxisClick = function(){
+        xAxisKey = this.innerHTML;
+        createData(events.axisEvent);
+        generate();
+      };
+      var yAxisClick = function(){
+        yAxisKey = this.innerHTML;
+        createData(events.axisEvent);
         generate();
       };
 
-      var yAxis = function(){
-        var key = this.innerHTML;
-        data.y = [];
-
-        plotData.map(function(d){
-          data.y.push(d[key]);
-        });
-
+      var groupingClick = function(){
+        groupKey = this.innerHTML;
+        createData(events.groupEvent);
         generate();
-      };
+      }
 
-      var generate = function(){
-        if(data.x.length >0 && data.y.length > 0){
-          Plotly.newPlot("actual-chart-" + uniqueId, [data]);
+
+
+      var createData = function(whatChanged){
+        if(xAxisKey === undefined && yAxisKey === undefined){
+          return;
+        }
+
+        if(whatChanged === events.axisEvent ){
+          for(i=0;i<data.length;i++){
+            data[i].y = []; // clear out the old data set
+            data[i].x = [];
+
+            plotData.map(function(d){
+              data[i].x.push(d[xAxisKey]);
+              data[i].y.push(d[yAxisKey]);
+            });
+
+          }
+        }else if (whatChanged == events.groupEvent) {
+          var groupedData = [];
+          data = [];
+
+          plotData.map(function(d){
+            var keyValue = d[groupKey];
+
+            if(groupedData[keyValue] === undefined){
+              groupedData[keyValue] = {x:[], y:[]};
+            }
+            groupedData[keyValue].x.push( d[xAxisKey] );
+            groupedData[keyValue].y.push( d[yAxisKey] );
+
+          });
+
+          var groupKeys = Object.keys(groupedData);
+          for(i=0;i<groupKeys.length;i++){
+            data[i] = groupedData[groupKeys[i]];
+            data[i].name = groupKeys[i];
+          }
         }
       };
 
-      $(docEl).on("click", ".x-axis", xAxis);
-      $(docEl).on("click", ".y-axis", yAxis);
+      var generate = function(){
+        if(data[0].x.length >0 && data[0].y.length > 0){
+          Plotly.newPlot("actual-chart-" + uniqueId, data);
+        }
+      };
+
+      $(docEl).on("click", ".x-axis", xAxisClick);
+      $(docEl).on("click", ".y-axis", yAxisClick);
+      $(docEl).on("click", ".groups", groupingClick);
     };
 
     var chart = xyChart();
