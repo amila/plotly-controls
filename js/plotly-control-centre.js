@@ -28,39 +28,56 @@ var charts = (function(){
     keyAttributes = Object.keys(plotData[0]).map(function(key){ return {name: key} });
   }
 
-  var generateChart = function(chartType, uniqueId, docEl, chartData){
+  var generateChart = function(uniqueId, docEl, chartData){
     chartId = "chart-" + uniqueId;
     //if(chartType === "scatter"){
-      return scatterChart(uniqueId, docEl, chartData, chartType);
+      return generalChart(uniqueId, docEl, chartData);
     //}
   }
 
-  var scatterChart = function(uniqueId, docEl, chartData, chartType){
+  var generalChart = function(uniqueId, docEl, chartData){
+    var chartType = "scatter";
+    var data = [{x:[], y:[], type: this.chartType}];
+    var xAxisKey, yAxisKey, groupKey;
+    var events = {
+      axisEvent: "axisEvent",
+      groupEvent: "groupEvent"
+    };
+
     getAttributes(chartData);
 
     var output = templates["scatter-control"]({id: uniqueId, keys: keyAttributes});
     docEl.append(output);
 
-    var data = [{x:[], y:[], type: chartType}];
-    var xAxisKey, yAxisKey, groupKey;
-    var events = {
-      axisEvent: "axisEvent",
-      groupEvent: "groupEvent"
-    }
-
     var xAxisClick = function(){
       xAxisKey = this.innerHTML;
+      highlightSelected($(this).parent().children(), xAxisKey, "x-axis");
       transformData(events.axisEvent);
     };
     var yAxisClick = function(){
       yAxisKey = this.innerHTML;
+      highlightSelected($(this).parent().children(), yAxisKey, "y-axis");
       transformData(events.axisEvent);
     };
-
     var groupingClick = function(){
       groupKey = this.innerHTML;
+      highlightSelected($(this).parent().children(), groupKey, "groups");
       transformData(events.groupEvent);
-    }
+    };
+
+    var highlightSelected = function(group, selectedOption, groupClass){
+      group.map(function(id, option){
+        $(option).removeClass(groupClass);
+        
+        if(option.innerHTML === selectedOption){
+          $(option).addClass("pure-button-disabled");
+        }else{
+          $(option).removeClass("pure-button-disabled");
+          $(option).addClass(groupClass);
+        }
+
+      })
+    };
 
     // transform the data depending on
     // what event happened
@@ -107,7 +124,6 @@ var charts = (function(){
         }
       }
 
-
       generate();
     };
 
@@ -117,14 +133,24 @@ var charts = (function(){
       }
     };
 
+    var changeChartType = function(cType){
+      console.log(chartType);
+      chartType = cType;
+      for(i=0;i<data.length;i++){
+        data[i].type = chartType;
+      }
+
+      generate();
+    }
+
     var removeChart = function(){
       $(docEl).off("click", ".x-axis", xAxisClick);
       $(docEl).off("click", ".y-axis", yAxisClick);
       $(docEl).off("click", ".groups", groupingClick);
 
-
-        $("#" + chartId).remove();
+      $("#" + chartId).remove();
     };
+
 
     $(docEl).on("click", ".x-axis", xAxisClick);
     $(docEl).on("click", ".y-axis", yAxisClick);
@@ -132,7 +158,8 @@ var charts = (function(){
 
     return {
       id: "chart-" + uniqueId,
-      remove : removeChart
+      remove : removeChart,
+      changeChartType : changeChartType
     };
   };
 
@@ -152,14 +179,16 @@ var PlotlyControlCentre = (function(){
     var output = templates["chart-chooser"]({});
     docEl.append(output);
 
-    $(docEl).on("click", ".chart-type", function(){
-      var chartType = $(this).attr("chart-type");
 
-      if(theChart !== undefined){
-        theChart.remove();
+    theChart = charts.generate(uniqueId, docEl, plotData);
+
+    $(docEl).on("change", "#chart-list", function(){
+      var chartType = $(this).val();
+
+      if(chartType === "none"){
+        return;
       }
-
-      theChart = charts.generate(chartType, uniqueId, docEl, plotData);
+      theChart.changeChartType(chartType);
     });
 
     //var chart = charts.scatter(uniqueId, docEl, plotData);
