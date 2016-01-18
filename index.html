@@ -1,5 +1,25 @@
 <html>
   <head>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+    <style>
+
+        .button-xsmall {
+            font-size: 70%;
+        }
+
+        .button-small {
+            font-size: 85%;
+        }
+
+        .button-large {
+            font-size: 110%;
+        }
+
+        .button-xlarge {
+            font-size: 125%;
+        }
+
+    </style>
     <script src="bower_components/handlebars/handlebars.min.js"></script>
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -28,13 +48,13 @@
           {variable: "cpi", year:2022, value: Math.random()  },
           {variable: "cpi", year:2023, value: Math.random()  },
         ];
-        PlotlyControlCentre.controlCentre("#chart", r);
+        PlotlyControlCentre.controlCentre("#chart1", r);
+
+
       }
     </script>
   </head>
   <body onload="startUp()">
-    <div id="chart">
-    </div>
-
+    <div id="chart1"></div>
   </body>
 </html>
