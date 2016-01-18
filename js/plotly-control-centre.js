@@ -30,18 +30,18 @@ var charts = (function(){
 
   var generateChart = function(chartType, uniqueId, docEl, chartData){
     chartId = "chart-" + uniqueId;
-    if(chartType === "scatter"){
-      return scatterChart(uniqueId, docEl, chartData);
-    }
+    //if(chartType === "scatter"){
+      return scatterChart(uniqueId, docEl, chartData, chartType);
+    //}
   }
 
-  var scatterChart = function(uniqueId, docEl, chartData){
+  var scatterChart = function(uniqueId, docEl, chartData, chartType){
     getAttributes(chartData);
 
     var output = templates["scatter-control"]({id: uniqueId, keys: keyAttributes});
     docEl.append(output);
 
-    var data = [{x:[], y:[], type: "scatter"}];
+    var data = [{x:[], y:[], type: chartType}];
     var xAxisKey, yAxisKey, groupKey;
     var events = {
       axisEvent: "axisEvent",
@@ -103,6 +103,7 @@ var charts = (function(){
         for(i=0;i<groupKeys.length;i++){
           data[i] = groupedData[groupKeys[i]];
           data[i].name = groupKeys[i];
+          data[i].type = chartType;
         }
       }
 
