@@ -1,53 +1,26 @@
 <html>
   <head>
+    <meta charset="UTF-8">
     <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
-    <style>
+    <link rel="stylesheet" href="style/style.css">
 
-        .button-xsmall {
-            font-size: 70%;
-        }
-
-        .button-small {
-            font-size: 85%;
-        }
-
-        .button-large {
-            font-size: 110%;
-        }
-
-        .button-xlarge {
-            font-size: 125%;
-        }
-
-    </style>
     <script src="bower_components/handlebars/handlebars.min.js"></script>
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/underscore/underscore-min.js"></script>
+
     <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
     <script src="js/plotly-control-centre.js"></script>
 
     <script>
       function startUp(){
-        var r = [
-          {variable: "gdp", year:2015, value: Math.random()  },
-          {variable: "gdp", year:2016, value: Math.random()  },
-          {variable: "gdp", year:2017, value: Math.random()  },
-          {variable: "gdp", year:2018, value: Math.random()  },
-          {variable: "gdp", year:2019, value: Math.random()  },
-          {variable: "gdp", year:2020, value: Math.random()  },
-          {variable: "gdp", year:2021, value: Math.random()  },
-          {variable: "gdp", year:2022, value: Math.random()  },
-          {variable: "gdp", year:2023, value: Math.random()  },
-          {variable: "cpi", year:2015, value: Math.random()  },
-          {variable: "cpi", year:2016, value: Math.random()  },
-          {variable: "cpi", year:2017, value: Math.random()  },
-          {variable: "cpi", year:2018, value: Math.random()  },
-          {variable: "cpi", year:2019, value: Math.random()  },
-          {variable: "cpi", year:2020, value: Math.random()  },
-          {variable: "cpi", year:2021, value: Math.random()  },
-          {variable: "cpi", year:2022, value: Math.random()  },
-          {variable: "cpi", year:2023, value: Math.random()  },
-        ];
+        var r = [];
+        for(iteration=1;iteration<=100;iteration++){
+          for(year=1;year<=40;year++){
+            r.push({variable: "gdp", year:year, value: Math.random()});
+            r.push({variable: "cpi", year:year, value: Math.random()});
+          }
+        }
         PlotlyControlCentre.controlCentre("#chart1", r);
 
 
